@@ -27,10 +27,10 @@ public class UserController {
 
     @ApiOperation(value="登陆", notes="")
     @RequestMapping(value="/login", method = RequestMethod.POST)
-    public Integer login(@RequestParam Long id, @RequestParam String password) {
+    public Integer login(@RequestParam Long user, @RequestParam String password) {
 
         try {
-            String pwd = userRepository.findById(id).getPassword();
+            String pwd = userRepository.findByUser(user).getPassword();
             if(password.equals(pwd)) {
                 return 1;
             }
@@ -46,10 +46,15 @@ public class UserController {
 
     @ApiOperation(value="注册", notes="")
     @RequestMapping(value="/signin", method = RequestMethod.POST)
-    public Integer signin(@RequestParam Long id, @RequestParam String password) {
+    public Integer signin(@RequestParam Long user, @RequestParam String password) {
         try {
-            userRepository.save(new User(id, password));
-            return 1;
+            if(userRepository.findByUser(user) == null) {
+                userRepository.save(new User(user, password));
+                return 1;
+            }
+            else {
+                return 0;
+            }
         } catch (Exception e) {
             System.out.println(e.getStackTrace());
             return 0;
@@ -79,15 +84,20 @@ public class UserController {
     public Integer buy(@RequestParam String number, @RequestParam Long user) {
 //        trainRepository.save(new Train("北京", "上海", "G767", "北京西--上海", "12212", "G"));
         try {
-            Ticket tt = ticketRepository.findByUserAndNumber(user, number);
-            if(tt.getId() != -1 && tt.getState() == 1) {
-                return 0;
+
+            if(ticketRepository.findByUserAndNumberAndState(user, number, 1) == null) {
+                Train buy = trainRepository.findByNumber(number);
+                if(buy.getTicket() > 0) {
+                    ticketRepository.save(new Ticket(user, buy.getNumber(), buy.getTitle(), buy.getTime(), buy.getType(), 1));
+                    trainRepository.updateticketreduce(buy.getId());
+                    return 1;
+                }
+                else {
+                    return 0;
+                }
             }
             else {
-                Train buy = trainRepository.findByNumber(number);
-                ticketRepository.save(new Ticket(user, buy.getNumber(), buy.getTitle(), buy.getTime(), buy.getType(), 1));
-                trainRepository.updateticketreduce(buy.getId());
-                return 1;
+                return 0;
             }
         } catch (Exception e) {
             System.out.println(e.getStackTrace());
@@ -101,7 +111,7 @@ public class UserController {
     public Integer refund(@RequestParam String number, @RequestParam Long user) {
 //        trainRepository.save(new Train("北京", "上海", "G767", "北京西--上海", "12212", "G"));
         try {
-            Ticket ticket = ticketRepository.findByUserAndNumber(user, number);
+            Ticket ticket = ticketRepository.findByUserAndNumberAndState(user, number, 1);
             ticketRepository.updatestate(ticket.getId());
             Train t = trainRepository.findByNumber(number);
             trainRepository.updateticketreduce(t.getId());

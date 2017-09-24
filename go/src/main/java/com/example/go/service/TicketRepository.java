@@ -13,5 +13,5 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     @Query("update Ticket t set t.state = 0 where t.id=:id ")
     void updatestate(@Param("id") Long id);
 
-    Ticket findByUserAndNumber(Long user, String Number);
+    Ticket findByUserAndNumberAndState(Long user, String number, Integer state);
 }
