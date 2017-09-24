@@ -5,7 +5,7 @@ simple java spring project for react-12306
 
 #### 运行项目，可以单独测试
 * clone
-* 在编译器打开
+* 在编译器打开 go文件夹
 * 准备mysql数据库，新建数据库java，注意排序方式选择utf-8
 * run
 * 打开 http://localhost:8080/swagger-ui.html#/ 可以单独测试
