@@ -12,3 +12,4 @@ simple java spring project for react-12306
 
 #### 项目截图
 
+![github](https://github.com/jinqiang12345/12306server--java/blob/master/screenshot/java.png "github")
