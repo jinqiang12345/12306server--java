@@ -114,7 +114,7 @@ public class UserController {
             Ticket ticket = ticketRepository.findByUserAndNumberAndState(user, number, 1);
             ticketRepository.updatestate(ticket.getId());
             Train t = trainRepository.findByNumber(number);
-            trainRepository.updateticketreduce(t.getId());
+            trainRepository.updateticketadd(t.getId());
             return 1;
         } catch (Exception e) {
             System.out.println(e.getStackTrace());
